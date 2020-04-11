@@ -63,6 +63,7 @@ def main():
     global FPS
     background.fill(bg_color)
     velocity = (0, 0)
+    velocity_counter = 0
     enemies = []
     taillenght = 3
     tails = []
@@ -86,12 +87,23 @@ def main():
                     velocity = (0, -20)
                 elif event.key == pygame.K_DOWN:
                     velocity = (0, 20)
-                hero.move(velocity[0], velocity[1])
-                tail = Tail(background, cube_green_img, hero.rect.left, hero.rect.top)
-                tails.insert(0, tail)
+                # --- Uncomment for manual move control ---
+                # hero.move(velocity[0], velocity[1])
+                # tail = Tail(background, cube_green_img, hero.rect.left, hero.rect.top)
+                # tails.insert(0, tail)
+                # --- Uncomment for manual move control ---
+
+        # --- Uncomment for automatic move control ---
+        velocity_counter += 1
+        if velocity_counter == 60:
+            hero.move(velocity[0], velocity[1])
+            tail = Tail(background, cube_green_img, hero.rect.left, hero.rect.top)
+            tails.insert(0, tail)
+            velocity_counter = 0
+        # --- Uncomment for automatic move control ---    
 
         while len(enemies) < 3:
-            enemy = Enemy(background, cube_red_img, random.randint(50, 550), random.randint(50, 350))
+            enemy = Enemy(background, cube_red_img, random.randrange(20, 780, 20), random.randrange(20, 580, 20))
             enemy.draw()
             enemies.append(enemy)
 
