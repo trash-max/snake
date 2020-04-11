@@ -63,16 +63,13 @@ def main():
     global FPS
     background.fill(bg_color)
     velocity = (0, 0)
+    velocity_speed = 30
     velocity_counter = 0
     enemies = []
     taillenght = 3
     tails = []
     hero = Enemy(background, cube_green_img, 380, 280)
     hero.draw()
-    # i = 1
-    # while i < 50:
-    #     hero.move(i, 0)
-    #     i += 1
 
     while True:
         for event in pygame.event.get():
@@ -95,15 +92,15 @@ def main():
 
         # --- Uncomment for automatic move control ---
         velocity_counter += 1
-        if velocity_counter == 60:
+        if velocity_counter == velocity_speed:
             hero.move(velocity[0], velocity[1])
             tail = Tail(background, cube_green_img, hero.rect.left, hero.rect.top)
             tails.insert(0, tail)
             velocity_counter = 0
-        # --- Uncomment for automatic move control ---    
+        # --- Uncomment for automatic move control ---
 
         while len(enemies) < 3:
-            enemy = Enemy(background, cube_red_img, random.randrange(20, 780, 20), random.randrange(20, 580, 20))
+            enemy = Enemy(background, cube_red_img, random.randrange(20, win_size[0]-20, 20), random.randrange(20, win_size[1]-20, 20))
             enemy.draw()
             enemies.append(enemy)
 
@@ -120,8 +117,14 @@ def main():
                 tail.clear()
                 tails.remove(tail)
 
-
         screen.blit(background, (0,0))
+
+        if hero.rect.left <= 0 or hero.rect.right >= win_size[0]:
+            return
+        if hero.rect.top <= 0 or hero.rect.bottom >= win_size[1]:
+            return
+
+
         pygame.display.update()
         clock.tick(FPS)
 
