@@ -12,8 +12,12 @@ win_size = (800, 600)
 clock = pygame.time.Clock()
 screen = pygame.display.set_mode(win_size)
 
-cube_red_img = pygame.image.load(r'cube_red.png').convert()
-cube_green_img = pygame.image.load(r'cube_green.png').convert()
+try:
+    cube_red_img = pygame.image.load(r'resource/cube_red.png').convert()
+    cube_green_img = pygame.image.load(r'resource/cube_green.png').convert()
+except Exception as e:
+    raise
+
 
 class Enemy():
     def __init__(self, surf, img, x, y):
