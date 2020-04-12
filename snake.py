@@ -8,8 +8,8 @@ pygame.init()
 pygame.display.set_caption("Snake")
 FPS = 60
 bg_color = (0, 100, 0)
-blocks_w = 20
-blocks_h = 20
+blocks_w = 30
+blocks_h = 30
 block_size = 20
 win_size = (blocks_w * block_size, blocks_h * block_size)
 velocity_speed = 30
@@ -20,6 +20,7 @@ screen = pygame.display.set_mode(win_size)
 try:
     cube_red_img = pygame.image.load(r'resource/cube_red.png').convert()
     cube_green_img = pygame.image.load(r'resource/cube_green.png').convert()
+    cube_head_img = pygame.image.load(r'resource/cube_green.png').convert()
     border_line_img = pygame.image.load(r'resource/border.png').convert()
 except Exception as e:
     raise
@@ -95,9 +96,9 @@ def main():
     # velocity_speed = 30
     velocity_counter = 0
     enemies = []
-    taillenght = 3
+    taillenght = 1
     tails = []
-    hero = Enemy(background, cube_green_img, (blocks_w // 2) * block_size, (blocks_h // 2) * block_size)
+    hero = Enemy(background, cube_head_img, (blocks_w // 2) * block_size, (blocks_h // 2) * block_size)
     hero.draw()
 
     while True:
@@ -106,13 +107,20 @@ def main():
                 return
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
-                    velocity = (-block_size, 0)
+                    if velocity[0] != block_size:
+                        velocity = (-block_size, 0)
+
                 elif event.key == pygame.K_RIGHT:
-                    velocity = (block_size, 0)
+                    if velocity[0] != -block_size:
+                        velocity = (block_size, 0)
+
                 elif event.key == pygame.K_UP:
-                    velocity = (0, -block_size)
+                    if velocity[1] != block_size:
+                        velocity = (0, -block_size)
+
                 elif event.key == pygame.K_DOWN:
-                    velocity = (0, block_size)
+                    if velocity[1] != -block_size:
+                        velocity = (0, block_size)
 
         # velocity_counter += 1
         if velocity_counter == velocity_speed:
