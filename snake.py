@@ -91,7 +91,7 @@ def main():
     global FPS
     background.fill(bg_color)
     draw_border(border_line_img)
-    velocity = (0, 0)
+    velocity = (0, -block_size)
     # velocity_speed = 30
     velocity_counter = 0
     enemies = []
@@ -116,8 +116,9 @@ def main():
 
         # velocity_counter += 1
         if velocity_counter == velocity_speed:
-            hero.move(velocity[0], velocity[1])
+            # hero.move(velocity[0], velocity[1])
             tail = Tail(background, cube_green_img, hero.rect.left, hero.rect.top)
+            hero.move(velocity[0], velocity[1])
             tails.insert(0, tail)
             velocity_counter = 0
 
@@ -133,11 +134,17 @@ def main():
                     hero.draw()
                     taillenght += 1
 
+
             for tail in tails:
                 tail.draw()
                 if tails.index(tail) > taillenght:
                     tail.clear()
                     tails.remove(tail)
+                if hero.rect.colliderect(tail.rect):
+                     return
+                for enemy in enemies:
+                    if tail.rect.colliderect(enemy.rect):
+                        enemies.remove(enemy)
 
             screen.blit(background, (0,0))
 
