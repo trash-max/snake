@@ -5,9 +5,14 @@ import pygame
 import random
 
 pygame.init()
+pygame.display.set_caption("Snake")
 FPS = 60
 bg_color = (0, 100, 0)
-win_size = (800, 600)
+blocks_w = 20
+blocks_h = 20
+block_size = 20
+win_size = (blocks_w * block_size, blocks_h * block_size)
+velocity_speed = 30
 
 clock = pygame.time.Clock()
 screen = pygame.display.set_mode(win_size)
@@ -15,6 +20,7 @@ screen = pygame.display.set_mode(win_size)
 try:
     cube_red_img = pygame.image.load(r'resource/cube_red.png').convert()
     cube_green_img = pygame.image.load(r'resource/cube_green.png').convert()
+    border_line_img = pygame.image.load(r'resource/border.png').convert()
 except Exception as e:
     raise
 
@@ -59,16 +65,39 @@ class Tail():
 background = pygame.Surface(win_size)
 
 
+def draw_border(img):
+    i = block_size
+    while i <= win_size[1] - (block_size * 2):
+        background.blit(img, (0, i))
+        i += block_size
+    i = block_size
+    rot = pygame.transform.rotate(img, 180)
+    while i <= win_size[1] - (block_size * 2):
+        background.blit(rot, (win_size[0]-block_size, i))
+        i += block_size
+    i = block_size
+    rot = pygame.transform.rotate(img, -90)
+    while i <= win_size[0] - (block_size * 2):
+        background.blit(rot, (i, 0))
+        i += block_size
+    i = block_size
+    rot = pygame.transform.rotate(img, 90)
+    while i <= win_size[0] - (block_size * 2):
+        background.blit(rot, (i, win_size[1]-block_size))
+        i += block_size
+
+
 def main():
     global FPS
     background.fill(bg_color)
+    draw_border(border_line_img)
     velocity = (0, 0)
-    velocity_speed = 30
+    # velocity_speed = 30
     velocity_counter = 0
     enemies = []
     taillenght = 3
     tails = []
-    hero = Enemy(background, cube_green_img, 380, 280)
+    hero = Enemy(background, cube_green_img, (blocks_w // 2) * block_size, (blocks_h // 2) * block_size)
     hero.draw()
 
     while True:
@@ -77,54 +106,47 @@ def main():
                 return
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
-                    velocity = (-20, 0)
+                    velocity = (-block_size, 0)
                 elif event.key == pygame.K_RIGHT:
-                    velocity = (20, 0)
+                    velocity = (block_size, 0)
                 elif event.key == pygame.K_UP:
-                    velocity = (0, -20)
+                    velocity = (0, -block_size)
                 elif event.key == pygame.K_DOWN:
-                    velocity = (0, 20)
-                # --- Uncomment for manual move control ---
-                # hero.move(velocity[0], velocity[1])
-                # tail = Tail(background, cube_green_img, hero.rect.left, hero.rect.top)
-                # tails.insert(0, tail)
-                # --- Uncomment for manual move control ---
+                    velocity = (0, block_size)
 
-        # --- Uncomment for automatic move control ---
-        velocity_counter += 1
+        # velocity_counter += 1
         if velocity_counter == velocity_speed:
             hero.move(velocity[0], velocity[1])
             tail = Tail(background, cube_green_img, hero.rect.left, hero.rect.top)
             tails.insert(0, tail)
             velocity_counter = 0
-        # --- Uncomment for automatic move control ---
 
-        while len(enemies) < 3:
-            enemy = Enemy(background, cube_red_img, random.randrange(20, win_size[0]-20, 20), random.randrange(20, win_size[1]-20, 20))
-            enemy.draw()
-            enemies.append(enemy)
+            while len(enemies) < 3:
+                enemy = Enemy(background, cube_red_img, random.randrange(block_size, win_size[0]-block_size, block_size), random.randrange(block_size, win_size[1]-block_size, block_size))
+                enemy.draw()
+                enemies.append(enemy)
 
-        for enemy in enemies:
-            if hero.rect.colliderect(enemy.rect):
-                background.fill(bg_color, enemy.rect)
-                enemies.remove(enemy)
-                hero.draw()
-                taillenght += 1
+            for enemy in enemies:
+                if hero.rect.colliderect(enemy.rect):
+                    background.fill(bg_color, enemy.rect)
+                    enemies.remove(enemy)
+                    hero.draw()
+                    taillenght += 1
 
-        for tail in tails:
-            tail.draw()
-            if tails.index(tail) > taillenght:
-                tail.clear()
-                tails.remove(tail)
+            for tail in tails:
+                tail.draw()
+                if tails.index(tail) > taillenght:
+                    tail.clear()
+                    tails.remove(tail)
 
-        screen.blit(background, (0,0))
+            screen.blit(background, (0,0))
 
-        if hero.rect.left <= 0 or hero.rect.right >= win_size[0]:
-            return
-        if hero.rect.top <= 0 or hero.rect.bottom >= win_size[1]:
-            return
+            if hero.rect.left <= 0 or hero.rect.right >= win_size[0]:
+                return
+            if hero.rect.top <= 0 or hero.rect.bottom >= win_size[1]:
+                return
 
-
+        velocity_counter += 1
         pygame.display.update()
         clock.tick(FPS)
 
