@@ -22,6 +22,7 @@ try:
     cube_green_img = pygame.image.load(r'resource/cube_green.png').convert()
     cube_head_img = pygame.image.load(r'resource/cube_green.png').convert()
     border_line_img = pygame.image.load(r'resource/border.png').convert()
+    corner_img = pygame.image.load(r'resource/corner.png').convert()
 except Exception as e:
     raise
 
@@ -66,7 +67,7 @@ class Tail():
 background = pygame.Surface(win_size)
 
 
-def draw_border(img):
+def draw_border(img, cimg):
     i = block_size
     while i <= win_size[1] - (block_size * 2):
         background.blit(img, (0, i))
@@ -86,12 +87,20 @@ def draw_border(img):
     while i <= win_size[0] - (block_size * 2):
         background.blit(rot, (i, win_size[1]-block_size))
         i += block_size
+    background.blit(cimg, (0, 0))
+    rot = pygame.transform.rotate(cimg, 90)
+    background.blit(cimg, (0, win_size[1]-block_size))
+    rot = pygame.transform.rotate(cimg, -90)
+    background.blit(cimg, (win_size[0]-block_size, 0))
+    rot = pygame.transform.rotate(cimg, 180)
+    background.blit(cimg, (win_size[0]-block_size, win_size[1]-block_size))
+
 
 
 def main():
     global FPS
     background.fill(bg_color)
-    draw_border(border_line_img)
+    draw_border(border_line_img, corner_img)
     velocity = (0, -block_size)
     # velocity_speed = 30
     velocity_counter = 0
