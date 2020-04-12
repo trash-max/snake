@@ -6,17 +6,28 @@ import random
 
 pygame.init()
 pygame.display.set_caption("Snake")
+
+# Конфигурация
 FPS = 60
+# Цвет фона
 bg_color = (0, 100, 0)
-blocks_w = 30
-blocks_h = 30
+# Количество игровых блоков ширина/высота (40х30 блоков = 800х600 px)
+blocks_w = 20
+blocks_h = 20
+# Размер игрового блока (лучше не менять)
 block_size = 20
+# Итоговое разрешение ирового поля
 win_size = (blocks_w * block_size, blocks_h * block_size)
+# Скорость движения змеи
 velocity_speed = 30
 
 clock = pygame.time.Clock()
+# Объявим дисплей
 screen = pygame.display.set_mode(win_size)
-
+# Объявим отдельную поверхность по размерам дисплея
+# весь дальнейший вывод производится на нее
+background = pygame.Surface(win_size)
+# Загружаем изображения
 try:
     cube_red_img = pygame.image.load(r'resource/cube_red.png').convert()
     cube_green_img = pygame.image.load(r'resource/cube_green.png').convert()
@@ -27,6 +38,7 @@ except Exception as e:
     raise
 
 
+# Класс используется как для еды, так и для головы змеи
 class Enemy():
     def __init__(self, surf, img, x, y):
         # self.color = (255, 255,255)
@@ -48,6 +60,7 @@ class Enemy():
         return self.rect
 
 
+# Отдельный класс для элементов хвоста
 class Tail():
     def __init__(self, surf, img, x, y):
         # self.color = (255, 255,255)
@@ -63,10 +76,10 @@ class Tail():
     def clear(self):
         self.surf.fill(bg_color, self.rect)
 
+# Перенесено в раздел конфигурации
+# background = pygame.Surface(win_size)
 
-background = pygame.Surface(win_size)
-
-
+# Рисутет рамку вокруг игрового поля
 def draw_border(img, cimg):
     i = block_size
     while i <= win_size[1] - (block_size * 2):
@@ -96,17 +109,23 @@ def draw_border(img, cimg):
     background.blit(cimg, (win_size[0]-block_size, win_size[1]-block_size))
 
 
-
+# Основной игровой цикл
 def main():
     global FPS
+    # закрасим поле
     background.fill(bg_color)
+    # нарисуем рамки
     draw_border(border_line_img, corner_img)
+    # изначальный вектор движения
     velocity = (0, -block_size)
-    # velocity_speed = 30
+    # изначальная длина хвоста
+    taillenght = 1
+    # далее объявление служебных переменных цикла
+    nextturn = True
     velocity_counter = 0
     enemies = []
-    taillenght = 1
     tails = []
+    # создаем и рисуем голову змеи на стартовой позиции
     hero = Enemy(background, cube_head_img, (blocks_w // 2) * block_size, (blocks_h // 2) * block_size)
     hero.draw()
 
@@ -116,29 +135,33 @@ def main():
                 return
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
-                    if velocity[0] != block_size:
+                    if velocity[0] != block_size and nextturn:
                         velocity = (-block_size, 0)
+                        nextturn = False
 
                 elif event.key == pygame.K_RIGHT:
-                    if velocity[0] != -block_size:
+                    if velocity[0] != -block_size and nextturn:
                         velocity = (block_size, 0)
+                        nextturn = False
 
                 elif event.key == pygame.K_UP:
-                    if velocity[1] != block_size:
+                    if velocity[1] != block_size and nextturn:
                         velocity = (0, -block_size)
+                        nextturn = False
 
                 elif event.key == pygame.K_DOWN:
-                    if velocity[1] != -block_size:
+                    if velocity[1] != -block_size and nextturn:
                         velocity = (0, block_size)
+                        nextturn = False
 
-        # velocity_counter += 1
         if velocity_counter == velocity_speed:
-            # hero.move(velocity[0], velocity[1])
             tail = Tail(background, cube_green_img, hero.rect.left, hero.rect.top)
             hero.move(velocity[0], velocity[1])
             tails.insert(0, tail)
             velocity_counter = 0
+            nextturn = True
 
+            # Генерация еды для змеи (три штуки)
             while len(enemies) < 3:
                 enemy = Enemy(background, cube_red_img, random.randrange(block_size, win_size[0]-block_size, block_size), random.randrange(block_size, win_size[1]-block_size, block_size))
                 enemy.draw()
