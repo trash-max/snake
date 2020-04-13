@@ -5,12 +5,9 @@ import pygame
 import random
 
 pygame.init()
+pygame.display.set_caption("Snake")
 
 # Конфигурация
-# Имя игры
-game_name = 'Snake'
-pygame.display.set_caption(game_name)
-
 FPS = 60
 # Цвет фона
 bg_color = (0, 100, 0)
@@ -23,9 +20,6 @@ block_size = 20
 win_size = (blocks_w * block_size, blocks_h * block_size)
 # Скорость движения змеи
 velocity_speed = 30
-# Размер шрифта и цвет текста
-font_size = 16
-text_color = (255, 255, 255)
 
 clock = pygame.time.Clock()
 # Объявим дисплей
@@ -40,12 +34,6 @@ try:
     cube_head_img = pygame.image.load(r'resource/cube_green.png').convert()
     border_line_img = pygame.image.load(r'resource/border.png').convert()
     corner_img = pygame.image.load(r'resource/corner.png').convert()
-except Exception as e:
-    raise
-
-try:
-    font = pygame.font.Font(r'resource/3976.ttf', font_size)
-    # font = pygame.font.Font(None, font_size)
 except Exception as e:
     raise
 
@@ -121,17 +109,8 @@ def draw_border(img, cimg):
     background.blit(cimg, (win_size[0]-block_size, win_size[1]-block_size))
 
 
-def draw_text():
-    text = font.render("SPACE to pause", 1, (text_color))
-    place = text.get_rect(topleft=(block_size, win_size[1]-block_size))
-    background.blit(text, place)
-    text = font.render("Q to quit", 1, (text_color))
-    place = text.get_rect(topleft=((win_size[0] - (block_size * 4)) - 6, win_size[1]-block_size))
-    background.blit(text, place)
-
-
 # Пауза в игре
-def game_pause():
+def pause_game():
     pause = True
     while pause:
         pygame.time.delay(20)
@@ -144,13 +123,12 @@ def game_pause():
     return
 
 # Основной игровой цикл
-def game_cycle():
-    # global FPS
+def main():
+    global FPS
     # закрасим поле
     background.fill(bg_color)
     # нарисуем рамки
     draw_border(border_line_img, corner_img)
-    draw_text()
     # изначальный вектор движения
     velocity = (0, -block_size)
     # изначальная длина хвоста
@@ -160,7 +138,6 @@ def game_cycle():
     velocity_counter = 0
     enemies = []
     tails = []
-    score = 0
     # создаем и рисуем голову змеи на стартовой позиции
     hero = Enemy(background, cube_head_img, (blocks_w // 2) * block_size, (blocks_h // 2) * block_size)
     hero.draw()
@@ -191,7 +168,7 @@ def game_cycle():
                         nextturn = False
 
                 elif event.key == pygame.K_SPACE:
-                    game_pause()
+                    pause_game()
 
         if velocity_counter == velocity_speed:
             tail = Tail(background, cube_green_img, hero.rect.left, hero.rect.top)
@@ -212,8 +189,7 @@ def game_cycle():
                     enemies.remove(enemy)
                     hero.draw()
                     taillenght += 1
-                    score += 1
-                    pygame.display.set_caption(f'{game_name}: score: {score}')
+
 
             for tail in tails:
                 tail.draw()
@@ -226,7 +202,6 @@ def game_cycle():
                     if tail.rect.colliderect(enemy.rect):
                         enemies.remove(enemy)
 
-
             screen.blit(background, (0,0))
 
             if hero.rect.left <= 0 or hero.rect.right >= win_size[0]:
@@ -237,10 +212,6 @@ def game_cycle():
         velocity_counter += 1
         pygame.display.update()
         clock.tick(FPS)
-
-
-def main():
-    game_cycle()
 
 if __name__ == "__main__":
     main()
