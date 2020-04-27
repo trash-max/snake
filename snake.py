@@ -35,11 +35,11 @@ screen = pygame.display.set_mode(win_size)
 background = pygame.Surface(win_size)
 # Загружаем изображения
 try:
-    cube_red_img = pygame.image.load(r'resource/cube_red.png').convert()
-    cube_green_img = pygame.image.load(r'resource/cube_green.png').convert()
-    cube_head_img = pygame.image.load(r'resource/cube_green.png').convert()
-    border_line_img = pygame.image.load(r'resource/border.png').convert()
-    corner_img = pygame.image.load(r'resource/corner.png').convert()
+    cube_red_img = pygame.image.load(r'resource/snake/cube_red.png').convert()
+    cube_green_img = pygame.image.load(r'resource/snake/cube_green.png').convert()
+    cube_head_img = pygame.image.load(r'resource/snake/cube_green.png').convert()
+    border_line_img = pygame.image.load(r'resource/snake/border.png').convert()
+    corner_img = pygame.image.load(r'resource/snake/corner.png').convert()
 except Exception as e:
     raise
 
@@ -192,6 +192,9 @@ def game_cycle():
 
                 elif event.key == pygame.K_SPACE:
                     game_pause()
+
+                elif event.key == pygame.K_q:
+                    return
 
         if velocity_counter == velocity_speed:
             tail = Tail(background, cube_green_img, hero.rect.left, hero.rect.top)
